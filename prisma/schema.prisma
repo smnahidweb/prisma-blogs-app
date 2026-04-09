@@ -37,17 +37,16 @@ model Comment{
   authorId String
   postId String
   post Post @relation(fields: [postId],references: [id])
-parentsId String?
-
-parent Comment? @relation("CommentChildren", fields: [parentsId], references: [id])
-
+  parentsId String?
+  
+  parent Comment? @relation("CommentChildren", fields: [parentsId], references: [id])
+  replies Comment[] @relation("CommentChildren")
 updatedAt DateTime @updatedAt
 status Status @default(APPROVED) 
 @@index([authorId])
 @@index([postId])
 @@map("comments")
 
-comments Comment[] @relation("CommentChildren")
 }
 
 enum PostStatus {
