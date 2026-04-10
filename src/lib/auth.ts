@@ -1,14 +1,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { Prisma } from "../../generated/prisma/client";
-// If your Prisma file is located elsewhere, you can change the path
 
+import { prisma } from "./prisma";
 
 export const auth = betterAuth({
-    database: prismaAdapter(Prisma, {
-        provider: "postgresql", // or "mysql", "postgresql", ...etc
+    database: prismaAdapter(prisma, { // এখানে তৈরি করা 'prisma' ইন্সট্যান্সটি দিন
+        provider: "postgresql",
     }),
     emailAndPassword: { 
-    enabled: true, 
-  }, 
+        enabled: true, 
+    }, 
 });
