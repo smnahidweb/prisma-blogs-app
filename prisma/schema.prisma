@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client" // এখানে prisma-client ছিল, এটি js হবে
   output   = "../generated/prisma"
 }
 
@@ -13,40 +13,39 @@ datasource db {
 }
 
 model Post {
-  id String @id @default(ulid())
-  title String
-  content String
-  thumbnail String?
-  isFeatured Boolean @default(false)
-  status PostStatus @default(PUBLISHED)
-  createdAt DateTime @default(now())  
-  updatedAt DateTime @updatedAt
-  tags String[]
-  views Int @default(0)
-  authorId String
-  comments Comment[]
+  id         String     @id @default(ulid())
+  title      String
+  content    String
+  thumbnail  String?
+  isFeatured Boolean    @default(false)
+  status     PostStatus @default(PUBLISHED)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  tags       String[]
+  views      Int        @default(0)
+  authorId   String
+  comments   Comment[]
+
   @@index([authorId])
   @@map("posts")
 }
 
-
-model Comment{
-  id String @id @default(ulid())
-  content String
-  createdAt DateTime @default(now())
-  authorId String
-  postId String
-  post Post @relation(fields: [postId],references: [id])
+model Comment {
+  id        String    @id @default(ulid())
+  content   String
+  createdAt DateTime  @default(now())
+  authorId  String
+  postId    String
+  post      Post      @relation(fields: [postId], references: [id])
   parentsId String?
-  
-  parent Comment? @relation("CommentChildren", fields: [parentsId], references: [id])
-  replies Comment[] @relation("CommentChildren")
-updatedAt DateTime @updatedAt
-status Status @default(APPROVED) 
-@@index([authorId])
-@@index([postId])
-@@map("comments")
+  parent    Comment?  @relation("CommentChildren", fields: [parentsId], references: [id])
+  replies   Comment[] @relation("CommentChildren")
+  updatedAt DateTime  @updatedAt
+  status    Status    @default(APPROVED)
 
+  @@index([authorId])
+  @@index([postId])
+  @@map("comments")
 }
 
 enum PostStatus {
@@ -61,3 +60,65 @@ enum Status {
   PENDING
 }
 
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
