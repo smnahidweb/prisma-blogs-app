@@ -4,7 +4,8 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client" // এখানে prisma-client ছিল, এটি js হবে
+  provider = "prisma-client"
+  // এখানে prisma-client ছিল, এটি js হবে
   output   = "../generated/prisma"
 }
 
@@ -70,6 +71,10 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+
+  role   String? @default("USER")
+  phone  String?
+  status String? @default("ACTIVE")
 
   @@unique([email])
   @@map("user")
