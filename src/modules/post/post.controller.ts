@@ -36,6 +36,8 @@ const postCreate = async (req:Request,res:Response)=>{
 const getAllPost = async(req:Request,res:Response)=>{
     try{
         const{search} = req.query;
+
+        const tags = req.query.tags 
         const searchString = typeof search === 'string' ? search : undefined
 
         const result = await postService.getAllPost({search: searchString});
