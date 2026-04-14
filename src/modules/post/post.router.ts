@@ -11,5 +11,7 @@ router.post('/', auth(UserRole.USER),
     postController.postCreate
 )
 
+router.get('/',postController.getAllPost)
+
 
 export const postRouter = router;
