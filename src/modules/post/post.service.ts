@@ -1,4 +1,6 @@
+import { AnyMxRecord } from "node:dns";
 import { Post } from "../../../generated/prisma/client";
+import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
@@ -16,11 +18,15 @@ const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorI
 
 }
 
-const getAllPost = async(payload:{search : string | undefined } )=>{
+const getAllPost = async(payload:{search : string | undefined , tags: string[] | [] , isFeatured : boolean | undefined } )=>{
     console.log("All post are here")
-    const allPost = await prisma.post.findMany({
-         where:{
-            OR:[
+    console.log("Tags:",payload.tags)
+   
+    const andCondition :  PostWhereInput[] = [];
+    
+    if(payload.search){
+        andCondition.push( {
+               OR:[
                 {
             title:{
             contains: payload.search as string,
@@ -39,7 +45,27 @@ const getAllPost = async(payload:{search : string | undefined } )=>{
             
         }
        }
-    ]
+    ],
+       })
+    }
+
+    if(payload.tags.length > 0 ){
+        andCondition.push({
+        tags:{
+        hasEvery : payload.tags as string[]
+     }
+     })
+    }
+
+    if(typeof payload.isFeatured === 'boolean'){
+        andCondition.push({
+            isFeatured : payload.isFeatured
+        })
+    }
+
+    const allPost = await prisma.post.findMany({
+         where:{
+        AND : andCondition
        
         }
     });
