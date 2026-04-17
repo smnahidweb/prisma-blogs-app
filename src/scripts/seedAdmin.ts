@@ -8,10 +8,11 @@ async function seedAdmin(){
 try{
 
     const adminData = {
-        name : "Admin saheb",
-        email:"admin@gmail.com",
+        name : "Admin3 saheb",
+        email:"admin3@gmail.com",
         role:UserRole.ADMIN,
-        password:"admin12345"
+        password:"admin12345",  
+    
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -25,7 +26,7 @@ try{
     if(existingUser){
         throw new Error("User already exist, try login with another email")
     }
-    else{
+   
         const adminSignUp = await fetch("http://localhost:3000/api/auth/sign-up/email",{
             method:"POST",
             headers :{
@@ -37,7 +38,18 @@ try{
 
         console.log(adminSignUp)
         const errorData = await adminSignUp.json();
-      
+
+    if(adminSignUp.ok){
+
+        await prisma.user.update({
+            where:{
+                email : adminData.email
+            },
+            data:{ 
+                emailVerified : true
+            }           
+        })
+
     }
 
 }

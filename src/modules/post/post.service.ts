@@ -18,9 +18,10 @@ const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorI
 
 }
 
-const getAllPost = async(payload:{search : string | undefined , tags: string[] | [] , isFeatured : boolean | undefined } )=>{
+const getAllPost = async(payload:{search : string | undefined , tags: string[] | [] , isFeatured : boolean | undefined ,page:number,limit:number } )=>{
     console.log("All post are here")
     console.log("Tags:",payload.tags)
+    console.log(payload.page,payload.limit)
    
     const andCondition :  PostWhereInput[] = [];
     
