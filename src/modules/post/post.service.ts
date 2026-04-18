@@ -2,6 +2,8 @@ import { AnyMxRecord } from "node:dns";
 import { Post } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { skip } from "node:test";
+import { SortOrder } from "../../../generated/prisma/internal/prismaNamespace";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
 
@@ -18,10 +20,13 @@ const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorI
 
 }
 
-const getAllPost = async(payload:{search : string | undefined , tags: string[] | [] , isFeatured : boolean | undefined ,page:number,limit:number } )=>{
+const getAllPost = async(payload:{search : string | undefined , 
+    tags: string[] | [] , isFeatured : boolean | undefined ,
+    
+    page:number,limit:number,skip:number ,sortBy:string | undefined , sortOrder:string | undefined } )=>{
+   
     console.log("All post are here")
-    console.log("Tags:",payload.tags)
-    console.log(payload.page,payload.limit)
+    
    
     const andCondition :  PostWhereInput[] = [];
     
@@ -65,10 +70,16 @@ const getAllPost = async(payload:{search : string | undefined , tags: string[] |
     }
 
     const allPost = await prisma.post.findMany({
+        take:payload.limit ,
+        skip:payload.skip,
          where:{
-        AND : andCondition
+
+         AND : andCondition
        
-        }
+        },
+        orderBy: payload.sortBy && payload.sortOrder ? {
+           [payload.sortBy] : payload.sortOrder
+        } : {createdAt:"desc"}
     });
     return allPost;
 }
