@@ -4,6 +4,7 @@ import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { skip } from "node:test";
 import { SortOrder } from "../../../generated/prisma/internal/prismaNamespace";
+import { date } from "better-auth";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
 
@@ -23,10 +24,11 @@ const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorI
 const getAllPost = async(payload:{search : string | undefined , 
     tags: string[] | [] , isFeatured : boolean | undefined ,
     
-    page:number,limit:number,skip:number ,sortBy:string | undefined , sortOrder:string | undefined } )=>{
+    page:number,limit:number,skip:number ,sortBy:string , sortOrder:string  } )=>{
    
     console.log("All post are here")
     
+    const {page,limit,skip} = payload
    
     const andCondition :  PostWhereInput[] = [];
     
@@ -77,14 +79,51 @@ const getAllPost = async(payload:{search : string | undefined ,
          AND : andCondition
        
         },
-        orderBy: payload.sortBy && payload.sortOrder ? {
-           [payload.sortBy] : payload.sortOrder
-        } : {createdAt:"desc"}
+     
+        orderBy: {
+            [payload.sortBy] : payload.sortOrder
+        },
+
+
     });
-    return allPost;
+
+    const total = await prisma.post.count({
+        where:{
+
+         AND : andCondition
+       
+        }
+    })
+
+    
+
+    
+    return {
+        data:allPost,
+        pagination : {
+        total,
+         page,
+        limit,
+        skip,
+        totalPage : Math.ceil(total/limit)
+        }
+    };
+}
+
+const getPostById = async(id:string)=>{
+    console.log("Get Post by Id from service",id)
+
+    const post = await prisma.post.findUnique({
+        where:{
+            id
+        }
+    })
+
+    return post;
 }
 
  export const postService = {
         createPost,
-        getAllPost
+        getAllPost,
+        getPostById
     }

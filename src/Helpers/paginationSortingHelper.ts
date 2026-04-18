@@ -5,7 +5,15 @@ type iOption = {
     limit?: number | string;
 }
 
-function sortingPagination(option: iOption) {
+type ioptionResult ={
+    page: number;
+    limit: number;
+    skip: number;
+    sortBy: string;
+    sortOrder: string;
+}
+
+function sortingPagination(option: iOption): ioptionResult {
     console.log("sorting query", option);
     const page = Number(option.page) || 1;
     const limit = Number(option.limit) || 3;
