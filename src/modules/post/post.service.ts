@@ -1,5 +1,5 @@
 import { AnyMxRecord } from "node:dns";
-import { Post } from "../../../generated/prisma/client";
+import { Post, PostStatus, Status } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
 import { skip } from "node:test";
@@ -131,6 +131,45 @@ const getPostById = async(id:string)=>{
     const post = await tx.post.findUnique({
         where:{
             id
+        },
+     include:{
+
+            comments : {
+
+                where:{
+
+                    parentsId:null,
+
+                    status:Status.APPROVED
+
+                },
+
+                include:{
+
+                    replies:{
+                        where:{
+                            status:Status.APPROVED
+                        },
+                        include:{
+                            replies:{
+                                where:{
+                                    status:Status.APPROVED
+                                },
+                                include:{
+                                    replies:{
+                                        where:{
+                                            status:Status.APPROVED
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                   
+                }
+
+            }
+
         }
     })
 
