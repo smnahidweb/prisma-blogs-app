@@ -3,7 +3,7 @@ import {Request,Response} from "express"
 import { postService } from './post.service'
 import { Post } from '../../../generated/prisma/client'
 import { error } from 'node:console'
-import { any, boolean, number } from 'better-auth'
+import { any, boolean, number, string } from 'better-auth'
 import { paginationHelper } from '../../Helpers/paginationSortingHelper'
 
 
