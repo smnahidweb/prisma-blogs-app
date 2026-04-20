@@ -83,6 +83,13 @@ const getAllPost = async(payload:{search : string | undefined ,
         orderBy: {
             [payload.sortBy] : payload.sortOrder
         },
+        include:{
+            _count:{
+                select:{
+                    comments:true
+                }
+            }
+        }
 
 
     });
@@ -143,6 +150,9 @@ const getPostById = async(id:string)=>{
                     status:Status.APPROVED
 
                 },
+                orderBy:{
+                    createdAt:"desc"
+                },
 
                 include:{
 
@@ -150,16 +160,25 @@ const getPostById = async(id:string)=>{
                         where:{
                             status:Status.APPROVED
                         },
+                        orderBy:{
+                            createdAt:"asc"
+                        },
                         include:{
                             replies:{
                                 where:{
                                     status:Status.APPROVED
                                 },
+                                 orderBy:{
+                            createdAt:"asc"
+                        },
                                 include:{
                                     replies:{
                                         where:{
                                             status:Status.APPROVED
-                                        }
+                                        },
+                                         orderBy:{
+                            createdAt:"asc"
+                        },
                                     }
                                 }
                             }
@@ -168,6 +187,11 @@ const getPostById = async(id:string)=>{
                    
                 }
 
+            },
+            _count:{
+                select:{
+                    comments:true
+                }
             }
 
         }
