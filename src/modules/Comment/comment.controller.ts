@@ -64,8 +64,40 @@ const getCommentsByAUthorId = async(req:Request,res:Response)=>{
     }
 }
 
+const deleteComment = async(req:Request,res:Response)=>{
+
+    const {id} = req.params;
+    const user = req.user;
+
+   try{
+       const result = await commentService.deleteComment(id as string, user?.id as string); 
+       res.status(200).json(result)
+   }
+   catch(error){
+    console.error(error)
+   }
+
+
+}
+
+const updateComment = async(req:Request,res:Response)=>{
+
+    try{
+
+        const result = await commentService.updateComment(req.params.id as string, req.body, req.user?.id as string);
+        res.status(200).json(result)
+
+    }
+    catch(err){
+      console.error(err)
+    }
+
+}
+
 export const commentController = {
     createComment,
     getCommentById,
-    getCommentsByAUthorId
+    getCommentsByAUthorId,
+    deleteComment,
+    updateComment
 }

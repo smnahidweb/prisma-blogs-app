@@ -16,7 +16,6 @@ router.post('/',
     commentController.createComment)
 
     // getCommentById
-
     router.get('/:id',
         commentController.getCommentById
     )
@@ -24,6 +23,18 @@ router.post('/',
     // getCommentsByAuthorId
     router.get("/author/:authorId",
         commentController.getCommentsByAUthorId
+    )
+
+    // deleteComment
+    router.delete('/:id',
+        auth(UserRole.USER, UserRole.ADMIN),
+        commentController.deleteComment
+    )
+
+    // updateComment
+    router.patch('/:id',
+        auth(UserRole.USER, UserRole.ADMIN),
+        commentController.updateComment
     )
 
  export const commentRouter  = router;
