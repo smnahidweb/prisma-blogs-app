@@ -21,5 +21,9 @@ router.post('/',
         commentController.getCommentById
     )
 
+    // getCommentsByAuthorId
+    router.get("/author/:authorId",
+        commentController.getCommentsByAUthorId
+    )
 
  export const commentRouter  = router;
