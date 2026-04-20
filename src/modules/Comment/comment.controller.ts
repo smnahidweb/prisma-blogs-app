@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { commentService } from "./comment.service";
+import { string } from "better-auth";
 
 const createComment = async(req:Request,res:Response)=>{
    
@@ -20,6 +21,33 @@ const createComment = async(req:Request,res:Response)=>{
 
 }
 
+
+// getCommentById 
+
+const getCommentById = async(req:Request, res:Response)=>{
+    
+
+    try{
+   const {id} = req.params ;
+
+   if(!id){
+    return res.status(400).json({
+        error:"Comment ID is required"
+    })
+   }
+
+   const result = await commentService.getCommentByID({id: id as string});
+   res.status(200).json(result)
+
+    }
+    catch(error){
+        console.error(error)
+    }
+
+}
+
+
 export const commentController = {
-    createComment
+    createComment,
+    getCommentById
 }

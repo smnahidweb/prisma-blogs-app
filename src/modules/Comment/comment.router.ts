@@ -15,6 +15,11 @@ router.post('/',
     
     commentController.createComment)
 
+    // getCommentById
+
+    router.get('/:id',
+        commentController.getCommentById
+    )
 
 
  export const commentRouter  = router;
