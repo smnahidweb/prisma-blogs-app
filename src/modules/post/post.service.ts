@@ -5,6 +5,7 @@ import { prisma } from "../../lib/prisma";
 import { skip } from "node:test";
 import { SortOrder } from "../../../generated/prisma/internal/prismaNamespace";
 import { date } from "better-auth";
+import { isDataView } from "node:util/types";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
 
@@ -255,29 +256,32 @@ const getPostByAuthorId = async (authorId:string)=>{
 
 //update ownd post by author
 
-const updateOwnPost = async (id:string, updateData: any, authorId: string)=>{
-    
-    //check the post exist or not and also check the author of the post
+const updateOwnPost = async (id: string, updateData: any, authorId: string, isAdmin: boolean) => {
+    console.log("Update own post service called", id, updateData, authorId, isAdmin);
 
-    const post = await prisma.post.findFirst({
-        where:{
-            id,
-            authorId
-        }
-    })
+    // ১. প্রথমে পোস্টটি খুঁজে বের করুন (অথর আইডি ছাড়াই)
+    const post = await prisma.post.findUnique({
+        where: { id }
+    });
 
     if (!post) {
-        throw new Error("Post not found or you are not the author");
+        throw new Error("Post not found");
     }
 
-    return await prisma.post.update({
-        where:{
-            id,
-            authorId
-        },
-        data: updateData
-    })
+    // ২. পারমিশন চেক: যদি অ্যাডমিন না হয় এবং পোস্টটি তার নিজের না হয়
+    if (!isAdmin && post.authorId !== authorId) {
+        throw new Error("You are not authorized to update this post");
+    }
 
+    if(!isAdmin)
+{
+    delete updateData.isFeatured; // সাধারণ ব্যবহারকারীরা পোস্টকে ফিচার্ড করতে পারবে না
+}
+    // ৩. আপডেট করুন (শুধু আইডি দিয়ে, কারণ এটি ইউনিক)
+    return await prisma.post.update({
+        where: { id },
+        data: updateData
+    });
 }
 
  export const postService = {

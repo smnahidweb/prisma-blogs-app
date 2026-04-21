@@ -113,8 +113,9 @@ const getPostByAuthor = async (req: Request, res: Response) => {
     const updateOwnPost = async (req:Request,res:Response)=>{
         const {id} = req.params
         const authorId = req.user?.id;
+        const isAdmin = req.user?.role === 'ADMIN';
       try{
-          const result = await postService.updateOwnPost(id as string,req.body,authorId as string);
+          const result = await postService.updateOwnPost(id as string,req.body,authorId as string,isAdmin as boolean);
           res.status(200).json(result)
       }
       catch{
@@ -125,6 +126,8 @@ const getPostByAuthor = async (req: Request, res: Response) => {
     }
     
     }
+
+    
 export const postController = { 
     postCreate,
     getAllPost,
