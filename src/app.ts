@@ -5,6 +5,8 @@ import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import morgan from "morgan"
 import { commentRouter } from "./modules/Comment/comment.router";
+import { notFound } from "./Middleare/notFound";
+
 const app = express();
 app.use(express.json())
 
@@ -27,6 +29,7 @@ app.get("/",(req,res)=>{
 })
 
 
+app.use(notFound) // এই মডিউলটি সব রিকোয়েস্টের পরে থাকবে, তাই এটি 404 হ্যান্ডেল করবে
 
 export default app;
 

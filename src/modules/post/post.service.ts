@@ -314,43 +314,66 @@ const deletePost = async (id: string, authorId: string, isAdmin: boolean) => {
 
 //post stats
 
-const postStas = async()=>{
+const postStats = async () => {
+  return await prisma.$transaction(async (tx) => {
 
-   
+    const [totalPosts, publicPosts, draftPosts, archivedPosts,totalComments,approvedComments,totalUsers,adminCount,userCount,totalViews] = await Promise.all([
+      tx.post.count(),
+      tx.post.count({
+        where: { status: PostStatus.PUBLISHED }
+      }),
+      tx.post.count({
+        where: { status: PostStatus.DRAFT }
+      }),
+      tx.post.count({
+        where: { status: PostStatus.ARCHIVED }
+      }),
+      tx.comment.count(),
 
-  return await prisma.$transaction(async(tx)=>{
-
-    const totalPosts = await tx.post.count()
-    const publicPosts = await tx.post.count({
-        where:{
-            status:PostStatus.PUBLISHED
+      tx.comment.count({
+        where :{
+            status:Status.APPROVED
         }
-    })
+      }),
 
-    const draftPosts = await tx.post.count({
+      tx.user.count(),
+
+      tx.user.count({
         where:{
-            status:PostStatus.DRAFT
+            role:"ADMIN"
         }
-    })
+      }),
 
-    const archievedPost = await tx.post.count({
+      tx.user.count({
         where:{
-            status:PostStatus.ARCHIVED
+            role:"USER"
         }
-    })
+      }),
 
-    return{
-        totalPosts,
-        publicPosts,
-        draftPosts,
-        archievedPost
-    }
-
-      
-  })
+      tx.post.aggregate({
+        _sum:{
+            views:true
+        }
+      })
 
 
-}
+    ]);
+
+    return {
+      totalPosts,
+      publicPosts,
+      draftPosts,
+      archivedPosts,
+      totalComments,
+      approvedComments,
+      totalUsers,
+      adminCount,
+      userCount,
+        totalViews: totalViews._sum.views || 0
+    };
+  });
+};
+
 
  export const postService = {
         createPost,
@@ -359,6 +382,5 @@ const postStas = async()=>{
         getPostByAuthorId,
         updateOwnPost,
         deletePost,
-        postStas
-
+        postStats
     }

@@ -157,7 +157,7 @@ const getPostByAuthor = async (req: Request, res: Response) => {
 
         try{
 
-            const result = await postService.postStas();
+            const result = await postService.postStats();
             res.status(200).json(result)
 
         }
