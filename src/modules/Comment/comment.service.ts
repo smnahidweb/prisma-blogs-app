@@ -152,11 +152,44 @@ return await prisma.comment.update({
 
 }
 
+//modarteComment
+
+const modarateComment = async(id:string , data:{status:Status}) =>{
+    console.log("Moderate comment . comment id and status::" , id, data);
+
+    const commentData = await prisma.comment.findUniqueOrThrow({
+        where:{
+            id
+        },
+        select:{
+            id:true,
+            status:true
+        }
+    })
+
+  
+    if(commentData.status === data.status){
+        throw new Error(`Comment is already ${data.status}`)    
+    }
+
+
+    return await prisma.comment.update({
+        where:{
+            id:commentData.id
+        },
+        data:{
+            status:data.status
+        }
+
+    })
+
+}
 
 export const commentService ={
     createComment,
     getCommentByID,
     getCommentsByAuthorId,
-    deleteComment,updateComment
+    deleteComment,updateComment,
+    modarateComment
 
 }

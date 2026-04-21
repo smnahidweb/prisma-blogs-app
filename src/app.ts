@@ -14,7 +14,7 @@ app.use(cors({
         credentials: true,
 }))
 app.use(morgan("dev"))
-app.use("/posts",postRouter)
+app.use("/posts", postRouter)
 app.use("/comments",commentRouter)  
 
 app.use("/api/auth", (req, res) => {
@@ -23,7 +23,7 @@ app.use("/api/auth", (req, res) => {
 });
 
 app.get("/",(req,res)=>{
-    res.send("Succussfully connected to server new changes")
+    res.send("Succussfully connected to server new changes new")
 })
 
 

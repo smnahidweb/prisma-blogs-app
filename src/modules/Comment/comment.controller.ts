@@ -94,10 +94,35 @@ const updateComment = async(req:Request,res:Response)=>{
 
 }
 
+// modarateComment 
+
+const moderateComment = async (req:Request,res:Response)=>{
+
+
+    const {id} = req.params;
+    
+
+    try{
+
+        const result = await commentService.modarateComment(id as string , req.body)
+        res.status(200).json(result)
+
+    }
+    catch(e){
+        const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
+        console.error("Error in moderateComment controller:", errorMessage);
+        res.status(401).json({
+            errorMessage: errorMessage
+        })
+
+    }
+}   
+
 export const commentController = {
     createComment,
     getCommentById,
     getCommentsByAUthorId,
     deleteComment,
-    updateComment
+    updateComment,
+    moderateComment
 }

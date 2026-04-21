@@ -91,8 +91,28 @@ console.log(id)
     }
 }
 
-export const postController = {
+
+const getPostByAuthor = async (req: Request, res: Response) => {
+ 
+    console.log("Get post by author controller called");
+        console.log("userId from token" , req.user);
+
+    if (!req.user) {
+        return res.status(401).json({ error: "You are not authorized" });
+    }
+
+    
+    const authorId = req.user.id;
+  const result = await postService.getPostByAuthorId(authorId);
+    res.status(200).json(result);
+
+}
+
+
+
+export const postController = { 
     postCreate,
     getAllPost,
-    getPostById
+    getPostById,
+    getPostByAuthor
 }

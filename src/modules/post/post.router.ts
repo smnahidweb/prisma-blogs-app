@@ -5,6 +5,14 @@ import auth, { UserRole } from "../../Middleare/auth";
 const router = express.Router();
 
 
+//getpostsbyauthorId
+
+router.get('/posts-by-author',
+   auth(UserRole.USER,UserRole.ADMIN),
+    postController.getPostByAuthor
+)
+
+
 
 router.post('/', auth(UserRole.USER),
 
@@ -16,6 +24,7 @@ router.get('/',postController.getAllPost)
 router.get('/:id',
     postController.getPostById
 )
+
 
 
 export const postRouter = router;
