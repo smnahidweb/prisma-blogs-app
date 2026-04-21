@@ -12,6 +12,11 @@ router.get('/posts-by-author',
     postController.getPostByAuthor
 )
 
+// postStatus
+router.get('/post-status',
+    auth(UserRole.ADMIN),
+    postController.postStatus
+    )
 
 
 router.post('/', auth(UserRole.USER),

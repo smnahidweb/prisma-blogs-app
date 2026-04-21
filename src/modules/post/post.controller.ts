@@ -152,6 +152,25 @@ const getPostByAuthor = async (req: Request, res: Response) => {
 
     }
 
+
+    const postStatus = async (req:Request,res:Response)=>{
+
+        try{
+
+            const result = await postService.postStas();
+            res.status(200).json(result)
+
+        }
+        catch(error){
+            res.status(401).json({
+                error:"Post stats fail",
+                details: error instanceof Error ? error.message : error
+            })
+        }
+
+
+    }
+
     
 export const postController = { 
     postCreate,
@@ -159,5 +178,7 @@ export const postController = {
     getPostById,
     getPostByAuthor,
     updateOwnPost,
-    deletePost
+    deletePost,
+    postStatus
 }
+

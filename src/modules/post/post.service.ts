@@ -7,6 +7,7 @@ import { SortOrder } from "../../../generated/prisma/internal/prismaNamespace";
 import { date } from "better-auth";
 import { isDataView } from "node:util/types";
 import { auth } from "../../lib/auth";
+import { totalmem } from "node:os";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
 
@@ -310,12 +311,54 @@ const deletePost = async (id: string, authorId: string, isAdmin: boolean) => {
 
 }
 
+
+//post stats
+
+const postStas = async()=>{
+
+   
+
+  return await prisma.$transaction(async(tx)=>{
+
+    const totalPosts = await tx.post.count()
+    const publicPosts = await tx.post.count({
+        where:{
+            status:PostStatus.PUBLISHED
+        }
+    })
+
+    const draftPosts = await tx.post.count({
+        where:{
+            status:PostStatus.DRAFT
+        }
+    })
+
+    const archievedPost = await tx.post.count({
+        where:{
+            status:PostStatus.ARCHIVED
+        }
+    })
+
+    return{
+        totalPosts,
+        publicPosts,
+        draftPosts,
+        archievedPost
+    }
+
+      
+  })
+
+
+}
+
  export const postService = {
         createPost,
         getAllPost,
         getPostById,
         getPostByAuthorId,
         updateOwnPost,
-        deletePost
+        deletePost,
+        postStas
 
     }
