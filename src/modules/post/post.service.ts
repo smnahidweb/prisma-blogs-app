@@ -6,6 +6,7 @@ import { skip } from "node:test";
 import { SortOrder } from "../../../generated/prisma/internal/prismaNamespace";
 import { date } from "better-auth";
 import { isDataView } from "node:util/types";
+import { auth } from "../../lib/auth";
 
 const createPost = async (data:Omit<Post,"id"|"createdAt"|'updatedAt' | "authorId">,userId:string)=>{
 
@@ -273,15 +274,40 @@ const updateOwnPost = async (id: string, updateData: any, authorId: string, isAd
         throw new Error("You are not authorized to update this post");
     }
 
-    if(!isAdmin)
-{
-    delete updateData.isFeatured; // সাধারণ ব্যবহারকারীরা পোস্টকে ফিচার্ড করতে পারবে না
+    if(!isAdmin){
+    delete updateData.isFeatured; 
 }
-    // ৩. আপডেট করুন (শুধু আইডি দিয়ে, কারণ এটি ইউনিক)
+   
     return await prisma.post.update({
         where: { id },
         data: updateData
     });
+}
+
+//delete own post by author and admin
+
+const deletePost = async (id: string, authorId: string, isAdmin: boolean) => {
+    
+    const postData = await prisma.post.findFirst({
+        where:{
+            id
+        }
+    })
+
+    if(!postData){
+        throw new Error("Post not found");
+    }
+
+    if(!isAdmin && postData.authorId !== authorId){
+        throw new Error("You are not authorized to delete this post");
+    }
+
+    return await prisma.post.delete({
+        where:{
+            id
+        }
+    })
+
 }
 
  export const postService = {
@@ -289,6 +315,7 @@ const updateOwnPost = async (id: string, updateData: any, authorId: string, isAd
         getAllPost,
         getPostById,
         getPostByAuthorId,
-        updateOwnPost
+        updateOwnPost,
+        deletePost
 
     }

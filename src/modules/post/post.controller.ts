@@ -127,11 +127,37 @@ const getPostByAuthor = async (req: Request, res: Response) => {
     
     }
 
+
+    //DELETE POST BY AUTHOR AND ADMIN
+
+    const deletePost = async (req:Request,res:Response)=>{
+
+        const {id} = req.params
+        const authorId = req.user?.id;
+        const isAdmin = req.user?.role === 'ADMIN';
+
+        try{
+
+             const result = await postService.deletePost(id as string,authorId as string,isAdmin as boolean);
+                res.status(200).json(result)
+
+
+        }
+        catch (error) { // এখানে error রিসিভ করতে হবে
+    res.status(401).json({
+        error: "Post delete fail",
+        details: error instanceof Error ? error.message : error
+    });
+}
+
+    }
+
     
 export const postController = { 
     postCreate,
     getAllPost,
     getPostById,
     getPostByAuthor,
-    updateOwnPost
+    updateOwnPost,
+    deletePost
 }

@@ -30,5 +30,12 @@ router.put('/:id',
     postController.updateOwnPost
     )
 
+    // delete post by author and admin
+
+    router.delete('/:id',
+    auth(UserRole.USER,UserRole.ADMIN),
+    postController.deletePost
+    )
+
 
 export const postRouter = router;
