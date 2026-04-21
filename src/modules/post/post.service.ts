@@ -253,12 +253,38 @@ const getPostByAuthorId = async (authorId:string)=>{
 
 }
 
+//update ownd post by author
 
+const updateOwnPost = async (id:string, updateData: any, authorId: string)=>{
+    
+    //check the post exist or not and also check the author of the post
+
+    const post = await prisma.post.findFirst({
+        where:{
+            id,
+            authorId
+        }
+    })
+
+    if (!post) {
+        throw new Error("Post not found or you are not the author");
+    }
+
+    return await prisma.post.update({
+        where:{
+            id,
+            authorId
+        },
+        data: updateData
+    })
+
+}
 
  export const postService = {
         createPost,
         getAllPost,
         getPostById,
-        getPostByAuthorId
+        getPostByAuthorId,
+        updateOwnPost
 
     }

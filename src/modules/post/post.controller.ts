@@ -5,6 +5,7 @@ import { Post } from '../../../generated/prisma/client'
 import { error } from 'node:console'
 import { any, boolean, number, string } from 'better-auth'
 import { paginationHelper } from '../../Helpers/paginationSortingHelper'
+import { auth } from '../../lib/auth'
 
 
 const postCreate = async (req:Request,res:Response)=>{
@@ -108,11 +109,26 @@ const getPostByAuthor = async (req: Request, res: Response) => {
 
 }
 
-
-
+//UPDATE OWN POST
+    const updateOwnPost = async (req:Request,res:Response)=>{
+        const {id} = req.params
+        const authorId = req.user?.id;
+      try{
+          const result = await postService.updateOwnPost(id as string,req.body,authorId as string);
+          res.status(200).json(result)
+      }
+      catch{
+        res.status(401).json({
+            error:"Post update fail",
+             details: error   
+        })
+    }
+    
+    }
 export const postController = { 
     postCreate,
     getAllPost,
     getPostById,
-    getPostByAuthor
+    getPostByAuthor,
+    updateOwnPost
 }

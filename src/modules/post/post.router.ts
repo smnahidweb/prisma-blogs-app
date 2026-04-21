@@ -25,6 +25,10 @@ router.get('/:id',
     postController.getPostById
 )
 
+router.put('/:id',
+    auth(UserRole.USER,UserRole.ADMIN),
+    postController.updateOwnPost
+    )
 
 
 export const postRouter = router;
